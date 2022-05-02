@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Create Object from JSON String</h2>
+
+<p id="demo"></p>
+
+<script>
+const isTest = true;
+
+if(!Object.keys){
+    Object.keys = function(obj){
+        var arr=[],
+        key;
+        for(key in obj){
+            if(obj.hasOwnProperty(key)){
+                arr.push(key);
+            }
+        }
+        return arr;
+    }
+}
+
+Object.size = function(obj){
+    var size = 0,
+    key;
+    for(key in obj){
+        if(obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+let jsonExI = `{
+  "functions":[
+      {
+          "name":"myFunction",
+          "arguments":"a,b,c",
+          "body":"return a*b+c;"
+        }
+    ],
+  "squadName": "Super hero squad",
+  "homeTown": "Metro City",
+  "formed": 2016,
+  "secretBase": "Super tower",
+  "active": true,
+  "theNumber":  9007199254740991,
+  "members": [
+    {
+      "name": "Molecule Man",
+      "age": 29,
+      "secretIdentity": "Dan Jukes",
+      "powers": [
+        "Radiation resistance",
+        "Turning tiny",
+        "Radiation blast"
+      ]
+    },
+    {
+      "name": "Madame Uppercut",
+      "age": 39,
+      "secretIdentity": "Jane Wilson",
+      "powers": [
+        "Million tonne punch",
+        "Damage resistance",
+        "Superhuman reflexes"
+      ]
+    },
+    {
+      "name": "Eternal Flame",
+      "age": 1000000,
+      "secretIdentity": "Unknown",
+      "powers": [
+        "Immortality",
+        "Heat Immunity",
+        "Inferno",
+        "Teleportation",
+        "Interdimensional travel"
+      ]
+    }
+  ]
+}`;
+
+let jsonExII = `{  
+    "powers": [
+        "Immortality",
+        "Heat Immunity",
+        "Inferno",
+        "Teleportation",
+        "Interdimensional travel"
+    ]
+}`;
+
+const obj = JSON.parse(jsonExI);
+
+const objI = JSON.parse(jsonExI);
+
+const objII = jsonExII;
+
+let resultText = "";
+
+if(isTest) console.log( !Object.size ? Object.keys(obj.members).length : Object.size(obj.members));
+for(var i=0; i<Object.keys(obj.members).length;i++){
+    resultText += "<br/>"+obj.members[i].name + " " + obj.members[i].age;
+}
+document.getElementById("demo").innerHTML = resultText;
+
+function getKeyName(sourceObj){
+    const sourceType = typeof sourceObj;
+    sourceObj = sourceType == "string" ? JSON.parse(sourceObj) : sourceObj;
+
+    if(isTest) console.log("sourceObj:", sourceObj);
+    let arrKeys = Object.keys(sourceObj);
+    for(var a=0; a < arrKeys.length; a++){
+        let nameKey = arrKeys[a];
+        let valObj = sourceObj[nameKey];
+        const typeObj = nameKey=="functions" ? "function" : typeof valObj;
+        
+        switch(typeObj){
+            case "bigint":
+                break;
+            case "boolean":
+                if(isTest) console.log("boolean value = ", valObj);
+                break;
+            case "function":
+                for(var f=0;f<Object.size(valObj);f++){
+                    let funcObj = valObj[f];
+                    let funcArg = funcObj.hasOwnProperty('arguments') ? funcObj.arguments : '';
+                    let funcBody = funcObj.hasOwnProperty('body') ? funcObj.body : 'return true;';
+                    let funcName = funcObj.hasOwnProperty('name') ? funcObj.name : '_';
+                    var func = new Function(funcArg, funcBody);
+                    func.displayName = funcName;
+                    func.name = funcName;
+                    if(isTest) console.log(func.displayName,"=",func(1,2,3));
+                }
+                break;
+            case "number": 
+                if(isTest) console.log("number value = ", valObj);
+                break;
+            case "object": 
+                for(var k=0;k<Object.keys(valObj).length;k++){
+                    let childObj = valObj[k];
+                    const childType = typeof childObj;
+                    if(childType=="object") getKeyName(childObj);                    
+                }
+                break;
+            case "string": 
+                if(isTest) console.log("string value ='", valObj,"'");
+                break;
+            case "symbol": 
+                break;
+            case "undefined": 
+                break;
+            default: 
+                break;
+        }
+    }
+}
+
+getKeyName(objI);
+
+//getKeyName(objII);
+</script>
+
+</body>
+</html>
